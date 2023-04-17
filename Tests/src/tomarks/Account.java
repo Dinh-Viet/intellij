@@ -9,7 +9,7 @@ public class Account {
     private String customerCode;
     private String customerNanme;
     private int accNumber;
-    private long ammout;
+    private long amount;
 
 
     public void inputAccount() {
@@ -28,8 +28,8 @@ public class Account {
             isCustomerCodeValid = true;
             customerCode = codes;
         }
-        System.out.print("Enter customerName: ");
-        String customerName = scanner.nextLine();
+        System.out.print("Enter customerName");
+        customerNanme = scanner.nextLine();
         while (!isAccNumberValid) {
             System.out.print("Enter accNumber: ");
             String Number = scanner.nextLine();
@@ -58,11 +58,11 @@ public class Account {
                 System.out.println("Amount must be a positive number");
                 return;
             }
-            this.ammout += amount;
+            this.amount += amount;
             return;
         }
-        if (amount > 0 && amount < this.ammout) {
-            this.ammout -= amount;
+        if (amount > 0 && amount < this.amount) {
+            this.amount -= amount;
             return;
         }
         System.out.println("Non-sufficient funds");
@@ -70,6 +70,6 @@ public class Account {
 
     @Override
     public String toString() {
-        return String.format("customerCode = %s customerName = %s accNumber = %d amount = %d", customerCode, customerNanme, accNumber, ammout);
+        return String.format("customerCode = %s customerName = %s accNumber = %d amount = %d", customerCode, customerNanme, accNumber, amount);
     }
 }
