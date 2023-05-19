@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TypeController {
-    public static boolean addType(Type type){
+    public static boolean addType(Type type ){
 
         Connection connection = null;
         CallableStatement callableStatement = null;
