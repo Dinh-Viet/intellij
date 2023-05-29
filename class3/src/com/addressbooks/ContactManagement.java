@@ -1,84 +1,88 @@
 package com.addressbooks;
 
-import com.addressbooks.Util.DBConnection;
+import com.addressbooks.Controller.ContactController;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ContactManagement {
-    public void addContact(Contact contact) throws Exception{
-        try {
-            Connection conn = com.addressbooks.Util.DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(
-                    "INSERT INTO Contacts(NAME,COMPANY, EMAIL,PHONE_NUMBER) VALUES (?,?,?,?)");
-            pstmt.setString(1,contact.getNAME());
-            pstmt.setString(2,contact.getCOMPAYNY());
-            pstmt.setString(3,contact.getEMAIL());
-            pstmt.setString(4,contact.getPHONE_NUMBER());
 
-            int updated = pstmt.executeUpdate();
-            if(updated > 0) {
-                System.out.println("Insert Contact success!!!");
+    private static List<Contact> contacts;
+    public ContactManagement(){
+
+        refreshcontacts();
+    }
+
+
+    public static void addContact() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+        if (name.isEmpty()) {
+            throw new Exception("Name must not be empty");
+        }
+
+        System.out.print("Enter company: ");
+        String company = scanner.nextLine();
+        if (company.isEmpty()) {
+            throw new Exception("Company must not be empty");
+        }
+
+        // Validate email
+        System.out.print("Enter email: ");
+        String email = scanner.nextLine();
+        String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";;
+        if (!validate(email, emailRegex)) {
+            throw new Exception("Invalid email");
+        }
+        System.out.print("Enter phone: ");
+        String phone = scanner.nextLine();
+        String phoneRegex = "0[0-9]+";
+        if (!validate(phone, phoneRegex)) {
+            throw new Exception("Invalid phone number");
+        }
+
+        Contact contact = new Contact(name, company, email, phone);
+        ContactController.addContact(contact);
+        refreshcontacts();
+    }
+
+        public static void FindContact() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter contact name: ");
+        String name = scanner.nextLine();
+        Contact result = null;
+        for (Contact contact : contacts) {
+            if (contact.getNAME().equalsIgnoreCase(name)) {
+                result = contact;
+                break;
             }
-
-            pstmt.close();
-            conn.close();
-        }catch(Exception e){
-            throw new Exception(e.getMessage());
+        }
+        if (result != null) {
+            System.out.printf("%-15s %-15s %-25s %-25s%n", "Contact Name", "Company", "Email", "Phone Number");
+            System.out.printf("%-15s %-15s %-25s %-25s%n", result.getNAME(), result.getCOMPANY(), result.getEMAIL(), result.getPHONE_NUMBER());
+        } else {
+            System.out.println("Not found");
         }
     }
-    public static Contact getContactById(int id) throws Exception {
-
-        Contact contact = null;
-
-        try {
-            Connection conn =  DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(
-                    "SELECT ID, NAME, COMPANY, EMAIL,PHONE_NUMBER FROM Contacts WHERE Id = ?");
-            pstmt.setInt(1, id);
-
-            ResultSet rs = pstmt.executeQuery();
-            if(rs.next()) {
-                contact = new Contact(
-                        rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4),
-                        rs.getString(5)
-                );
-            }
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+    public static void DisplayContacts() {
+        System.out.println(" ".repeat(25) + " Address Book " + " ".repeat(35));
+        System.out.printf("%-15s %-15s %-25s %-25s%n", "Contact Name", "Company", "Email", "Phone Number");
+        for (Contact contact : contacts) {
+            System.out.printf("%-15s %-15s %-25s %-25s%n", contact.getNAME(), contact.getCOMPANY(), contact.getEMAIL(), contact.getPHONE_NUMBER());
         }
-        return contact;
     }
-    public static void DisplayContact() throws Exception{
-        try {
-            Connection conn = DBConnection.getConnection();
-            Statement stmt = conn.createStatement();
-
-            ResultSet rs = stmt.executeQuery("SELECT ID, NAME, COMPANY, Email, PHONE_NUMBER FROM Contacts");
-
-            while(rs.next()) {
-                Contact contact = new Contact(
-                        rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4),
-                        rs.getString(5)
-                );
-
-                System.out.println(contact.toString());
-            }
-
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    private static void refreshcontacts() {
+        contacts = ContactController.getContacts();
+    }
+    private static boolean validate(String input, String rawPattern) {
+        Pattern pattern = Pattern.compile(rawPattern);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
     }
 
 }

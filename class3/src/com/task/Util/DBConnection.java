@@ -4,17 +4,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DBConnection {
-    public static Connection getConnection() throws Exception {
-        try {
-
-            // 1. Register JDBC driver
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-
-            // 2. Create connection
-            return DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=Task_JDBC", "sa", "1172004");
-
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        public static Connection getConnection() throws Exception {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/XML", "Doanhviet", "1172004Viet@");
+                return connection;
+            } catch (Exception e) {
+                throw new Exception("Connection failure!");
+            }
         }
     }
-}
