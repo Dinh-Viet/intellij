@@ -1,0 +1,30 @@
+create database jsonAPI;
+use jsonAPI;
+
+create table post(
+    userId int,
+    id int,
+    title varchar(255),
+    body varchar(255)
+);
+select * from post;
+# delete table
+drop table post;
+# delete 1 row
+DELETE FROM post
+WHERE userId = 6;
+# delete all row
+DELETE FROM post;
+
+create table user(
+    id int,
+    name varchar(255),
+    username varchar(255),
+    email varchar(255),
+    address json,
+    phone varchar(100),
+    website varchar(255),
+    company json
+);
+select * from user;
+DROP TABLE user

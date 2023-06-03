@@ -7,6 +7,8 @@ public class User {
     String email;
     Address address;
     String phone;
+    String website;
+    Company company;
 
     public String getPhone() {
         return phone;
@@ -16,8 +18,13 @@ public class User {
         this.phone = phone;
     }
 
-    String website;
-    Company company;
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
     @Override
     public String toString() {

@@ -1,5 +1,6 @@
 package com.JSON;
 
+import com.JSON.Controller.UserController;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,6 +29,7 @@ public class UserManegement {
 //          Lấy dữ liệu từ api
 //            System.out.println(response.toString());
             JSONArray jsonArray = new JSONArray(response.toString());
+            User[] users = new User[jsonArray.length()];
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject object = (JSONObject) jsonArray.get(i);
                 User username = new User();
@@ -44,6 +46,7 @@ public class UserManegement {
                     username.address.setCity(addressObject.get("city").toString());
                     username.address.setZipcode(addressObject.get("zipcode").toString());
 
+
                     //Geography Object
                     JSONObject geoObject = (JSONObject) addressObject.get("geo");
                         username.address.geo = new Geography();
@@ -59,8 +62,11 @@ public class UserManegement {
                     username.company.setCatchPhrase(companyObject.get("catchPhrase").toString());
                     username.company.setBs(companyObject.get("bs").toString());
 
-                System.out.println(username.toString());
+
+                users[i] = username;
             }
+            UserController userController = new UserController();
+            userController.insertNewUser(users);
             conn.disconnect();
 
         }catch (Exception e){
